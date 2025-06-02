@@ -2,8 +2,9 @@ import requests
 import os
 
 # Set your file paths here
-first_wav_path = r"C:\\Users\\anevico\\OneDrive - Microsoft\\Documents\\Sound Recordings\\an-test123.wav"
-second_wav_path = r"C:\\Users\\anevico\\OneDrive - Microsoft\\Documents\\Sound Recordings\\an-test321.wav"
+first_wav_path = "C:\\Users\\anevico\\OneDrive - Microsoft\\Documents\\Sound Recordings\\an-test123.wav"
+# second_wav_path = "C:\\Users\\anevico\\OneDrive - Microsoft\\Documents\\Sound Recordings\\an-test321.wav"
+second_wav_path = "C:\\Users\\anevico\\OneDrive - Microsoft\\Documents\\Sound Recordings\\foranthony.wav"
 
 file_paths = [
     ("first.wav", first_wav_path),
