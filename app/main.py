@@ -1,11 +1,19 @@
-from fastapi import FastAPI, UploadFile, File
+import os
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from typing import List
 import tempfile
 import shutil
-import os
+import logging
 from speechbrain.inference import SpeakerRecognition
 from fastapi import status
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+MODEL_SOURCE = os.getenv("MODEL_SOURCE", "speechbrain/spkrec-ecapa-voxceleb")
+MODEL_SAVEDIR = os.getenv("MODEL_SAVEDIR", "pretrained_models/spkrec-ecapa-voxceleb")
 
 app = FastAPI(
     title="FastAPI Speaker Recognition API",
@@ -15,15 +23,24 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Load the speaker recognition model once
-speaker_model = SpeakerRecognition.from_hparams(
-    source="speechbrain/spkrec-ecapa-voxceleb",
-    savedir="pretrained_models/spkrec-ecapa-voxceleb"
-)
+try:
+    speaker_model = SpeakerRecognition.from_hparams(
+        source=MODEL_SOURCE,
+        savedir=MODEL_SAVEDIR
+    )
+except Exception as e:
+    logger.error(f"Failed to load speaker model: {e}")
+    speaker_model = None
 
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Speaker Recognition API"}
+
+@app.get("/health")
+def health_check():
+    if speaker_model is None:
+        return JSONResponse(status_code=500, content={"status": "error", "detail": "Model not loaded"})
+    return {"status": "ok"}
 
 @app.post(
     "/compare-speakers/",
@@ -35,8 +52,11 @@ def read_root():
 async def compare_speakers(
     files: List[UploadFile] = File(..., description="Upload at least two WAV files.")
 ):
+    if speaker_model is None:
+        logger.error("Speaker model is not loaded.")
+        raise HTTPException(status_code=500, detail="Speaker model is not loaded.")
     if len(files) < 2:
-        return JSONResponse(status_code=400, content={"error": "At least two wav files are required."})
+        raise HTTPException(status_code=400, detail="At least two wav files are required.")
 
     temp_paths = []
     try:
@@ -51,17 +71,31 @@ async def compare_speakers(
         results = []
         for i in range(len(temp_paths)):
             for j in range(i + 1, len(temp_paths)):
-                score, _ = speaker_model.verify_files(temp_paths[i], temp_paths[j])
-                results.append({
-                    "file1": files[i].filename,
-                    "file2": files[j].filename,
-                    "similarity_score": float(score)
-                })
+                try:
+                    score, _ = speaker_model.verify_files(temp_paths[i], temp_paths[j])
+                    results.append({
+                        "file1": files[i].filename,
+                        "file2": files[j].filename,
+                        "similarity_score": float(score)
+                    })
+                except Exception as e:
+                    logger.error(f"Error comparing {files[i].filename} and {files[j].filename}: {e}")
+                    results.append({
+                        "file1": files[i].filename,
+                        "file2": files[j].filename,
+                        "error": str(e)
+                    })
         return {"results": results}
+    except Exception as e:
+        logger.error(f"Error processing files: {e}")
+        raise HTTPException(status_code=500, detail=f"Error processing files: {e}")
     finally:
         # Clean up temp files
         for path in temp_paths:
-            os.remove(path)
+            try:
+                os.remove(path)
+            except Exception as e:
+                logger.warning(f"Failed to remove temp file {path}: {e}")
 
 @app.post("/recognize/")
 def recognize_speaker(audio_file: bytes):
