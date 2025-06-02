@@ -23,5 +23,7 @@ for label, path in file_paths:
 
 response = requests.post("http://localhost:8000/compare-speakers/", files=wav_files)
 print(response.status_code)
-print(response.json())
-
+try:
+    print(response.json())
+except Exception:
+    print(response.text)

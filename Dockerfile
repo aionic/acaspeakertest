@@ -8,11 +8,11 @@ RUN apt-get update && \
     apt-get install -y ffmpeg sox libsox-fmt-all && \
     rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt ./
+COPY requirements/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY app ./app
 
 EXPOSE 8000
 
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "main:app", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "--bind", "0.0.0.0:8000"]

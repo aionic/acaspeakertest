@@ -1,35 +1,58 @@
-# FastAPI Containerized Python API
+# FastAPI Speaker Recognition API
 
-This project is a simple FastAPI application, containerized with Docker.
+This project is a containerized FastAPI application for comparing multiple WAV files to determine if they are from the same speaker, using SpeechBrain and deployable to Azure Container Apps.
 
 ## Features
-- FastAPI web server
-- Docker containerization
-- Basic `/` endpoint returning a Hello World message
-- Production-ready Gunicorn server with Uvicorn worker
+- FastAPI web server using gunicorn
+- Speaker comparison endpoint (`/compare-speakers/`)
+- Health check endpoint (`/health`)
+- Containerized with Docker
+- Production-ready with Gunicorn and Uvicorn worker
+- Infrastructure-as-Code (Bicep) for Azure deployment
+
+## Project Structure
+```
+app/                # FastAPI application code
+requirements/       # Python dependencies
+scripts/            # Utility scripts (run, test)
+infrastructure/     # Bicep, parameters, and deployment scripts
+```
 
 ## Getting Started
 
 ### Prerequisites
-- Docker installed
+- Docker
+- Azure CLI (for Azure deployment)
 
-### Build the Docker image
+### Build and Run Locally (Docker)
 ```powershell
-docker build -t fastapi-app .
+cd scripts
+./run_docker.ps1
+```
+The API will be available at [http://localhost:8000](http://localhost:8000)
+
+### Test the API
+Use the provided script:
+```powershell
+cd scripts
+python sample_request.py
+```
+Or use Swagger UI at [http://localhost:8000/docs](http://localhost:8000/docs)
+
+### Health Check
+```http
+GET /health
+```
+Returns `{ "status": "ok" }`
+
+## Deploy to Azure Container Apps
+1. Build and push your Docker image to Azure Container Registry (ACR).
+2. Update `infrastructure/main.parameters.json` with your image name and registry.
+3. Deploy with:
+```powershell
+cd infrastructure
+./deploy.ps1
 ```
 
-### Run the container
-```powershell
-docker run -d -p 8000:8000 fastapi-app
-```
-
-### Run locally with Gunicorn (optional)
-```powershell
-gunicorn -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:8000
-```
-
-### Access the API
-Open your browser and go to: [http://localhost:8000](http://localhost:8000)
-
-### API Docs
-Visit [http://localhost:8000/docs](http://localhost:8000/docs) for interactive API documentation.
+## License
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

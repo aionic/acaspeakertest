@@ -14,6 +14,10 @@ speaker_model = SpeakerRecognition.from_hparams(
     savedir="pretrained_models/spkrec-ecapa-voxceleb"
 )
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
 @app.post("/compare-speakers/")
 async def compare_speakers(files: List[UploadFile] = File(...)):
     if len(files) < 2:
@@ -28,13 +32,10 @@ async def compare_speakers(files: List[UploadFile] = File(...)):
                 shutil.copyfileobj(file.file, tmp)
                 temp_paths.append(tmp.name)
 
-        # Extract embeddings
-        embeddings = [speaker_model.encode_batch(tmp_path).squeeze(0) for tmp_path in temp_paths]
-
         # Compare all pairs and return similarity scores
         results = []
-        for i in range(len(embeddings)):
-            for j in range(i + 1, len(embeddings)):
+        for i in range(len(temp_paths)):
+            for j in range(i + 1, len(temp_paths)):
                 score, _ = speaker_model.verify_files(temp_paths[i], temp_paths[j])
                 results.append({
                     "file1": files[i].filename,
