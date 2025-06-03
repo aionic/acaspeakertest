@@ -3,6 +3,4 @@ uvicorn
 gunicorn
 speechbrain
 torchaudio
-ffmpeg-python
 python-multipart
-SoX

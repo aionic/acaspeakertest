@@ -1,6 +1,0 @@
-fastapi
-uvicorn
-gunicorn
-speechbrain
-torchaudio
-python-multipart
