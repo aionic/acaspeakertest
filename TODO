@@ -1,0 +1,6 @@
+Fix solution so that it doesn't drop the model cache
+# Set Versions in requirements
+Look at loadenv (python.env)
+Make sure all downstream services use aio similar to how the speaker endpoint is configured
+# Depreciate upload to ACR (replaced by CI/CD in ACA)
+Refactor tests to write to the project folder and add to .gitignore

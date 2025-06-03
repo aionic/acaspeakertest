@@ -24,6 +24,7 @@ app = FastAPI(
 )
 
 try:
+    # Always try to load from MODEL_SOURCE (remote) to ensure model is present after container restarts
     speaker_model = SpeakerRecognition.from_hparams(
         source=MODEL_SOURCE,
         savedir=MODEL_SAVEDIR
