@@ -13,6 +13,7 @@ RUN apt-get update && \
 
 COPY requirements/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r ./requirements.txt
+RUN python -c "from speechbrain.inference import SpeakerRecognition; SpeakerRecognition.from_hparams(source='speechbrain/spkrec-ecapa-voxceleb', savedir='pretrained_models/spkrec-ecapa-voxceleb')"
 
 COPY app ./app
 

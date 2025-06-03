@@ -99,5 +99,5 @@ async def compare_speakers(
 
 @app.post("/recognize/")
 def recognize_speaker(audio_file: bytes):
-    # Logic for speaker recognition
-    return {"message": "Speaker recognized"}
+    # Logic for speaker recognition (WIP/Stub to be implemented)
+    return {"message": "Hello World - Speaker recognized"}
