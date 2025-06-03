@@ -6,3 +6,4 @@ Make sure all downstream services use aio similar to how the speaker endpoint is
 Refactor tests to write to the project folder and add to .gitignore
 Build out IaC for solution
 Add a health probe to ACA
+Could look at reconfiguring for http2
