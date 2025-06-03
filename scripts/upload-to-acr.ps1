@@ -1,8 +1,8 @@
 param(
-    [string]$acrName,
+    [string]$acrName = "acatest", #replace with your ACR name
     [string]$imageName = "speakertest-app",
     [string]$tag = "latest",
-    [string]$resourceGroupName
+    [string]$resourceGroupName = "ACA-Speakertest" #replace with your resource group name
 )
 
 if (-not $acrName) {
