@@ -16,9 +16,10 @@ RUN pip install --no-cache-dir -r ./requirements.txt
 
 COPY app ./app
 
-# Change ownership and switch to non-root user
-RUN chown -R appuser:appuser /app
-USER appuser
+# Create the model cache directory and set permissions (ignore errors if it doesn't exist yet)
+RUN mkdir -p /app/pretrained_models && \
+    chown -R appuser:appuser /app && \
+    chmod -R u+rwX /app/pretrained_models
 
 EXPOSE 8000
 
