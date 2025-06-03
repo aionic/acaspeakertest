@@ -78,3 +78,6 @@ ENV/
 # Ignore infrastructure outputs
 *.bicep
 *.parameters.json
+
+# Test temp files
+tests/temp/

@@ -45,6 +45,52 @@ GET /health
 ```
 Returns `{ "status": "ok" }`
 
+## Example API Usage
+
+### Compare Speakers
+Compare two or more WAV files to determine if they are from the same speaker.
+
+**Request:**
+```http
+POST /compare-speakers/
+Content-Type: multipart/form-data
+files: [WAV file 1, WAV file 2, ...]
+```
+
+**Example using Python (requests):**
+```python
+import requests
+
+files = [
+    ("files", ("file1.wav", open("file1.wav", "rb"), "audio/wav")),
+    ("files", ("file2.wav", open("file2.wav", "rb"), "audio/wav")),
+]
+response = requests.post("http://localhost:8000/compare-speakers/", files=files)
+print(response.json())
+```
+
+**Example Response:**
+```json
+{
+  "results": [
+    {
+      "file1": "file1.wav",
+      "file2": "file2.wav",
+      "similarity_score": 0.87654321
+    }
+  ]
+}
+```
+
+- `similarity_score` closer to 1.0 means more likely the same speaker.
+- If an error occurs for a file pair, an `error` field will be present instead of `similarity_score`.
+
+### Health Check
+```http
+GET /health
+```
+Returns `{ "status": "ok" }`
+
 ## Deploy to Azure Container Apps
 1. Build and push your Docker image to Azure Container Registry (ACR).
 2. Update `infrastructure/main.parameters.json` with your image name and registry.
