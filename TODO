@@ -1,9 +1,9 @@
-# Fix solution so that it doesn't drop the model cache (fixed pending validiation)
-# Set Versions in requirements
-Look at loadenv (python.env)
-Make sure all downstream services use aio similar to how the speaker endpoint is configured
-# Depreciate upload to ACR (replaced by CI/CD in ACA)
-Refactor tests to write to the project folder and add to .gitignore
-Build out IaC for solution
-Add a health probe to ACA
-Could look at reconfiguring for http2
+# TODO
+- Look at loadenv (python.env)
+- Make sure all downstream services use aio similar to how the speaker endpoint is configured
+- Test IaC
+- Document how to setup the github integration
+- Add a health probe to ACA
+- Could look at reconfiguring for http2
+
+# Done

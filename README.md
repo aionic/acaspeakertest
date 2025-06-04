@@ -84,6 +84,7 @@ print(response.json())
 
 - `similarity_score` closer to 1.0 means more likely the same speaker.
 - If an error occurs for a file pair, an `error` field will be present instead of `similarity_score`.
+- In internal testing a score of around .7 indicates the same user saying different things
 
 ### Health Check
 ```http
@@ -92,13 +93,13 @@ GET /health
 Returns `{ "status": "ok" }`
 
 ## Deploy to Azure Container Apps
-1. Build and push your Docker image to Azure Container Registry (ACR).
-2. Update `infrastructure/main.parameters.json` with your image name and registry.
-3. Deploy with:
+Currently the infra deployment creates the infrastructure using the hello world sample docker image
+1. Deploy with:
 ```powershell
 cd infrastructure
 ./deploy.ps1
 ```
+Once everything is provisioned you can link continuous deployment through azure container apps.  This may get cleaned up in a future pull request.
 
 ## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
