@@ -7,10 +7,10 @@ param location string
 @description('The managed environment resource ID')
 param environmentId string
 
-@description('The container image to deploy')
-param containerImage string = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+@description('The container image to deploy (leave empty to deploy no container)')
+param containerImage string
 
-@description('The target port for the container')
+@description('The target port for the container (optional)')
 param targetPort int = 80
 
 resource containerApp 'Microsoft.App/containerapps@2023-05-01' = {
@@ -20,7 +20,7 @@ resource containerApp 'Microsoft.App/containerapps@2023-05-01' = {
     managedEnvironmentId: environmentId
     configuration: {
       activeRevisionsMode: 'Single'
-      ingress: {
+      ingress: containerImage != '' ? {
         external: true
         targetPort: targetPort
         transport: 'Auto'
@@ -31,11 +31,11 @@ resource containerApp 'Microsoft.App/containerapps@2023-05-01' = {
           }
         ]
         allowInsecure: false
-      }
+      } : null
       registries: []
     }
     template: {
-      containers: [
+      containers: containerImage != '' ? [
         {
           name: name
           image: containerImage
@@ -44,7 +44,7 @@ resource containerApp 'Microsoft.App/containerapps@2023-05-01' = {
             memory: '0.5Gi'
           }
         }
-      ]
+      ] : []
       scale: {
         minReplicas: 1
         maxReplicas: 10
@@ -55,4 +55,4 @@ resource containerApp 'Microsoft.App/containerapps@2023-05-01' = {
 }
 
 output appId string = containerApp.id
-output appUrl string = 'https://${containerApp.properties.configuration.ingress.fqdn}'
+output appUrl string = containerImage != '' ? 'https://${containerApp.properties.configuration.ingress.fqdn}' : ''

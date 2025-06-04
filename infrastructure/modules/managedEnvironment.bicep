@@ -24,6 +24,12 @@ resource managedEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {
       }
     }
     zoneRedundant: false
+    workloadProfiles: [
+      {
+        name: 'consumption'
+        workloadProfileType: 'Consumption'
+      }
+    ]
   }
 }
 
